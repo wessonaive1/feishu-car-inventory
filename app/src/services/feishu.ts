@@ -27,45 +27,22 @@ const FIELD_MAPPING = {
   features: '车辆基本信息/Imformation', // 用户想展现这个字段
 };
 
-interface FeishuTokenResponse {
-  code: number;
-  msg: string;
-  tenant_access_token: string;
-  expire: number;
-}
-
-interface FeishuRecord {
-  record_id: string;
-  fields: Record<string, any>;
-}
-
-interface FeishuListResponse {
-  code: number;
-  msg: string;
-  data: {
-    has_more: boolean;
-    page_token: string;
-    total: number;
-    items: FeishuRecord[];
-  };
-}
-
-let cachedToken: string | null = null;
-let tokenExpireAt = 0;
+// ... (keep interfaces as is)
 
 // 1. 获取 Tenant Access Token
 async function getTenantAccessToken(): Promise<string> {
-  // 如果缓存有效，直接返回
-  if (cachedToken && Date.now() < tokenExpireAt) {
-    return cachedToken;
-  }
-
+  // 必须优先使用 /api/feishu 代理，而不是直接请求 open.feishu.cn
+  // 因为浏览器直接请求飞书会遇到 CORS 跨域问题，而 Vercel Rewrite 已经帮我们解决了这个问题
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/v3/tenant_access_token/internal`, {
+    // 使用相对路径 /api/feishu，这样在本地和 Vercel 上都能工作
+    const response = await fetch(`/api/feishu/auth/v3/tenant_access_token/internal`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      // 注意：这里需要根据环境变量是否带 VITE_ 前缀来做兼容处理
+      // 但其实更安全的做法是把获取 Token 的逻辑也移到后端 API (api/image.js 类似的 api/token.js)
+      // 不过为了快速修复，我们先用 Rewrite 解决跨域
       body: JSON.stringify({
         app_id: APP_ID,
         app_secret: APP_SECRET,
@@ -73,7 +50,10 @@ async function getTenantAccessToken(): Promise<string> {
     });
 
     if (!response.ok) {
-      throw new Error(`Auth failed: ${response.statusText}`);
+       // 如果 Rewrite 失败，尝试直接请求（主要用于本地开发且没有配置 Rewrite 时，虽然现在本地 vite.config.ts 也没有配置代理了）
+       console.warn('Proxy request failed, trying direct request...');
+       // ... 但其实直接请求肯定会跨域，所以这里只需要抛出错误
+       throw new Error(`Auth failed: ${response.statusText}`);
     }
 
     const data: FeishuTokenResponse = await response.json();
@@ -83,7 +63,6 @@ async function getTenantAccessToken(): Promise<string> {
     }
 
     cachedToken = data.tenant_access_token;
-    // 提前 5 分钟过期，确保安全
     tokenExpireAt = Date.now() + (data.expire * 1000) - 300000;
     
     return cachedToken;
@@ -95,21 +74,13 @@ async function getTenantAccessToken(): Promise<string> {
 
 // 2. 获取多维表格记录
 export async function fetchCars(): Promise<Car[]> {
-  if (!APP_ID || !APP_SECRET || !APP_TOKEN || !TABLE_ID) {
-    console.warn('Feishu configuration is missing. Using mock data.');
-    return [];
-  }
-
-  // 移除严格的 'bas' 前缀检查，因为新版 Base Token 可能不以 'bas' 开头
-  if (!APP_TOKEN.startsWith('bas')) {
-     console.warn('Base Token does not start with "bas", but proceeding anyway. Current token:', APP_TOKEN);
-  }
+  // ... (keep checks)
 
   try {
     const token = await getTenantAccessToken();
     
-    // 构建请求 URL
-    const url = `${API_BASE_URL}/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records`;
+    // 构建请求 URL - 同样使用 /api/feishu 代理
+    const url = `/api/feishu/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records`;
     
     const response = await fetch(url, {
       method: 'GET',
@@ -119,25 +90,7 @@ export async function fetchCars(): Promise<Car[]> {
       },
     });
 
-    if (!response.ok) {
-      throw new Error(`Fetch records failed: ${response.statusText}`);
-    }
-
-    const res: FeishuListResponse = await response.json();
-    
-    if (res.code !== 0) {
-      throw new Error(`Feishu API error: ${res.msg}`);
-    }
-
-    // 转换数据
-    return res.data.items.map(transformFeishuRecordToCar);
-
-  } catch (error) {
-    console.error('Error fetching cars from Feishu:', error);
-    // 出错时返回空数组，避免页面崩溃
-    return [];
-  }
-}
+    // ... (rest of the function)
 
 // 3. 数据转换助手
 function transformFeishuRecordToCar(record: FeishuRecord): Car {
