@@ -10,8 +10,9 @@ export default async function handler(req, res) {
   }
 
   // 获取环境变量 (Vercel 会自动注入)
-  const APP_ID = process.env.VITE_FEISHU_APP_ID;
-  const APP_SECRET = process.env.VITE_FEISHU_APP_SECRET;
+  // 为了安全，我们使用非 VITE_ 前缀的变量名，防止泄露给前端
+  const APP_ID = process.env.FEISHU_APP_ID || process.env.VITE_FEISHU_APP_ID;
+  const APP_SECRET = process.env.FEISHU_APP_SECRET || process.env.VITE_FEISHU_APP_SECRET;
 
   try {
     // 1. 获取 Tenant Access Token
