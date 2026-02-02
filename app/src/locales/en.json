@@ -1,0 +1,76 @@
+{
+  "nav": {
+    "home": "Home",
+    "inventory": "Inventory",
+    "contact": "Contact",
+    "explore": "Explore Cars"
+  },
+  "hero": {
+    "tag": "Leader in Pre-owned Luxury Cars",
+    "title": "Redefining the Automotive Landscape",
+    "subtitle": "Global Overseas Strategy Sets Sail",
+    "description": "Shunway opens a new chapter in the Belt and Road Initiative with altruistic, win-win, and strictly selected services. First-hand global brand car sources, second-hand trade reputation guarantee.",
+    "stats": {
+      "vehicles": "Vehicles",
+      "brands": "Brands",
+      "countries": "Countries",
+      "clients": "Clients"
+    }
+  },
+  "inventory": {
+    "title": "Featured Vehicles",
+    "found": "Found {{count}} luxury vehicles",
+    "search_placeholder": "Search brand, model...",
+    "all_brands": "All Brands",
+    "all_types": "All Body Types",
+    "all_fuels": "All Fuel Types",
+    "clear_filters": "Clear Filters",
+    "no_results": "No vehicles found matching your criteria",
+    "sort": {
+      "price_desc": "Price: High to Low",
+      "price_asc": "Price: Low to High",
+      "year_desc": "Year: Newest First",
+      "mileage_asc": "Mileage: Low to High"
+    },
+    "card": {
+      "year": ""
+    },
+    "modal": {
+      "year": "Year",
+      "mileage": "Mileage",
+      "fuel": "Fuel Type",
+      "transmission": "Transmission",
+      "body_type": "Body Type",
+      "features": "Key Features",
+      "download": "Download Gallery"
+    }
+  },
+  "contact": {
+    "tag": "24/7 Service",
+    "title": "Contact Us",
+    "subtitle": "Choose your preferred way to get in touch",
+    "wechat": "WeChat",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "phone": "Phone",
+    "follow_us": "Follow Us",
+    "copied": "Copied to clipboard"
+  },
+  "footer": {
+    "description": "Redefining the automotive landscape, global overseas strategy sets sail. First-hand global brand car sources, second-hand trade reputation guarantee.",
+    "quick_links": "Quick Links",
+    "services": "Services",
+    "contact_info": "Contact Info",
+    "rights": "© {{year}} Shunway. All rights reserved.",
+    "links": {
+      "home": "Home",
+      "inventory": "Inventory",
+      "about": "About Us",
+      "contact": "Contact Us",
+      "sourcing": "Car Sourcing",
+      "export": "Export Trade",
+      "logistics": "Logistics",
+      "support": "After-sales"
+    }
+  }
+}

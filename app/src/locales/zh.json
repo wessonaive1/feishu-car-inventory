@@ -1,0 +1,76 @@
+{
+  "nav": {
+    "home": "首页",
+    "inventory": "车辆库存",
+    "contact": "联系我们",
+    "explore": "探索车辆"
+  },
+  "hero": {
+    "tag": "二手汽车领航者",
+    "title": "定义汽车行业格局",
+    "subtitle": "全球海外战略启航",
+    "description": "Shunway 以利他、共赢、严选优购的落地服务，开启一带一路新篇章。一手世界品牌车源，二手贸易信誉保障。",
+    "stats": {
+      "vehicles": "在售车辆",
+      "brands": "合作品牌",
+      "countries": "服务国家",
+      "clients": "满意客户"
+    }
+  },
+  "inventory": {
+    "title": "精选车辆",
+    "found": "找到 {{count}} 辆豪华车型",
+    "search_placeholder": "搜索品牌、型号...",
+    "all_brands": "全部品牌",
+    "all_types": "全部车型",
+    "all_fuels": "全部能源",
+    "clear_filters": "清除筛选",
+    "no_results": "未找到匹配的车辆",
+    "sort": {
+      "price_desc": "价格：从高到低",
+      "price_asc": "价格：从低到高",
+      "year_desc": "年份：最新优先",
+      "mileage_asc": "里程：从低到高"
+    },
+    "card": {
+      "year": "年"
+    },
+    "modal": {
+      "year": "年份",
+      "mileage": "里程",
+      "fuel": "能源类型",
+      "transmission": "变速箱",
+      "body_type": "车身类型",
+      "features": "配置亮点",
+      "download": "下载图集"
+    }
+  },
+  "contact": {
+    "tag": "24/7 全天候服务",
+    "title": "联系我们",
+    "subtitle": "选择您喜欢的方式与我们取得联系",
+    "wechat": "微信咨询",
+    "whatsapp": "WhatsApp",
+    "email": "邮件咨询",
+    "phone": "电话咨询",
+    "follow_us": "关注我们",
+    "copied": "已复制到剪贴板"
+  },
+  "footer": {
+    "description": "定义汽车行业格局，全球海外战略启航。一手世界品牌车源，二手贸易信誉保障。",
+    "quick_links": "快速链接",
+    "services": "服务项目",
+    "contact_info": "联系方式",
+    "rights": "© {{year}} Shunway 顺潞来. 保留所有权利.",
+    "links": {
+      "home": "首页",
+      "inventory": "车辆库存",
+      "about": "关于我们",
+      "contact": "联系我们",
+      "sourcing": "车辆采购",
+      "export": "出口贸易",
+      "logistics": "物流服务",
+      "support": "售后支持"
+    }
+  }
+}
