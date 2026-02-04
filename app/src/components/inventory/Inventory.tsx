@@ -7,7 +7,7 @@ import { CarDetailModal } from './CarDetailModal';
 import { fetchCars } from '../../services/feishu';
 
 export function Inventory() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cars, setCars] = useState<Car[]>([]);
@@ -145,14 +145,16 @@ export function Inventory() {
             <div className="relative aspect-[16/10] overflow-hidden">
               <img 
                 src={car.images[0]} 
-                alt={car.name} 
+                alt={i18n.language === 'en' && car.nameEn ? car.nameEn : car.name} 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             
             <div className="p-5">
-              <h3 className="text-lg font-bold mb-3 text-white truncate">{car.name}</h3>
+              <h3 className="text-lg font-bold mb-3 text-white truncate">
+                {i18n.language === 'en' && car.nameEn ? car.nameEn : car.name}
+              </h3>
               <div className="flex gap-4 text-white/60 text-sm mb-4">
                 <span>{car.year}{t('inventory.card.year')}</span>
                 <span className="w-px h-4 bg-white/20" />
@@ -160,7 +162,7 @@ export function Inventory() {
               </div>
               
               <div className="flex flex-wrap gap-2">
-                {car.features.slice(0, 3).map((f, i) => (
+                {(i18n.language === 'en' && car.featuresEn ? car.featuresEn : car.features).slice(0, 3).map((f, i) => (
                   <span key={i} className="text-xs px-3 py-1 bg-white/5 rounded-full text-white/60 group-hover:bg-red-600/10 group-hover:text-red-400 transition-colors">
                     {f}
                   </span>

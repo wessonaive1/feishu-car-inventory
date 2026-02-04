@@ -59,7 +59,7 @@ export function Contact() {
     { 
       key: 'wechat',
       title: t('contact.wechat'), 
-      value: 'ShunwayAuto2024', 
+      value: '136 9019 0019', 
       color: 'bg-green-500', 
       action: handleCopyWeChat,
       cursor: 'cursor-pointer',
@@ -68,27 +68,27 @@ export function Contact() {
     { 
       key: 'whatsapp',
       title: t('contact.whatsapp'), 
-      value: '+86 138-0013-8000', 
+      value: '+86 136 9019 0019', 
       color: 'bg-emerald-500', 
-      link: 'https://wa.me/8613800138000',
+      link: 'https://wa.me/8613690190019',
       cursor: 'cursor-pointer',
       icon: WhatsAppIcon
     },
     { 
       key: 'email',
       title: t('contact.email'), 
-      value: 'sales@shunway.com', 
+      value: 'srf6841271@gmail.com', 
       color: 'bg-blue-500', 
-      link: 'mailto:sales@shunway.com',
+      link: 'mailto:srf6841271@gmail.com',
       cursor: 'cursor-pointer',
       icon: EmailIcon
     },
     { 
       key: 'phone',
       title: t('contact.phone'), 
-      value: '+86 400-888-8888', 
+      value: '+86 136 9019 0019', 
       color: 'bg-red-600', 
-      link: 'tel:+864008888888',
+      link: 'tel:+8613690190019',
       cursor: 'cursor-pointer',
       icon: PhoneIcon
     },
@@ -108,8 +108,12 @@ export function Contact() {
             <div 
               key={i} 
               onClick={() => {
-                if (item.action) item.action();
-                if (item.link) window.open(item.link, '_blank');
+                if (item.key === 'wechat') {
+                    navigator.clipboard.writeText('13690190019');
+                    toast.success(t('contact.copied'));
+                } else if (item.link) {
+                    window.open(item.link, '_blank');
+                }
               }}
               className={`bg-white/5 rounded-2xl p-7 border border-white/10 hover:border-white/20 transition-all hover:-translate-y-1 ${item.cursor}`}
             >
@@ -128,8 +132,8 @@ export function Contact() {
           <div className="flex justify-center gap-4">
             {[
               { icon: FacebookIcon, label: 'Facebook', link: 'https://www.facebook.com/profile.php?id=61583949447358' },
-              { icon: InstagramIcon, label: 'Instagram', link: 'https://instagram.com' },
-              { icon: TikTokIcon, label: 'TikTok', link: 'https://tiktok.com' },
+              { icon: InstagramIcon, label: 'Instagram', link: 'https://www.instagram.com/chinauncleshen/' },
+              { icon: TikTokIcon, label: 'TikTok', link: 'https://www.tiktok.com/@china.uncle.shen' },
             ].map(({ icon: Icon, label, link }) => (
               <a 
                 key={label} 

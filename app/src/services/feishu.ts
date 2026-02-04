@@ -1,11 +1,12 @@
+
 import type { Car } from '../types';
 
 // 使用 Vite Proxy 代理的地址
 const API_BASE_URL = '/api/feishu';
 
 // 从环境变量获取配置
-const APP_ID = import.meta.env.VITE_FEISHU_APP_ID;
-const APP_SECRET = import.meta.env.VITE_FEISHU_APP_SECRET;
+const APP_ID = import.meta.env.FEISHU_APP_ID || import.meta.env.VITE_FEISHU_APP_ID;
+const APP_SECRET = import.meta.env.FEISHU_APP_SECRET || import.meta.env.VITE_FEISHU_APP_SECRET;
 const APP_TOKEN = import.meta.env.VITE_FEISHU_APP_TOKEN;
 const TABLE_ID = import.meta.env.VITE_FEISHU_TABLE_ID;
 
@@ -13,84 +14,43 @@ const TABLE_ID = import.meta.env.VITE_FEISHU_TABLE_ID;
 const FIELD_MAPPING = {
   name: 'Model Name', 
   price: '售价', 
-  // 以下字段在用户提供的信息中没有直接对应，可能在“车辆基本信息/Imformation”中，
-  // 或者用户只想要展现那4个字段。
-  // 为了不破坏 Car 类型定义和前端展示逻辑，我们需要做一些默认值处理或者从“车辆基本信息”中解析。
-  // 暂时先保留映射，如果飞书里没有这些列，就会取不到值，前端会显示默认值。
   year: '年份', // 假设飞书里没有这一列，之后会取默认值
   mileage: '里程', // 假设飞书里没有这一列，之后会取默认值
   fuel: '能源类型', // 假设飞书里没有这一列，之后会取默认值
   transmission: '变速箱', // 假设飞书里没有这一列，之后会取默认值
   bodyType: '车型外观', // 更新为新字段
   brand: '品牌/Brand', 
-  images: '细节组图/Pictures', 
+  images: 'image_urls', // 修改为新的 R2 图片链接字段
   features: '车辆基本信息/Imformation', // 用户想展现这个字段
+  nameEn: 'Model Name En', // English Model Name
+  featuresEn: 'Features En', // English Features
 };
 
-// ... (keep interfaces as is)
-
-// 1. 获取 Tenant Access Token
-async function getTenantAccessToken(): Promise<string> {
-  // 必须优先使用 /api/feishu 代理，而不是直接请求 open.feishu.cn
-  // 因为浏览器直接请求飞书会遇到 CORS 跨域问题，而 Vercel Rewrite 已经帮我们解决了这个问题
+// 1. 获取车辆数据 (直接调用后端代理)
+export async function fetchCars(): Promise<Car[]> {
   try {
-    // 使用相对路径 /api/feishu，这样在本地和 Vercel 上都能工作
-    const response = await fetch(`/api/feishu/auth/v3/tenant_access_token/internal`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // 注意：这里需要根据环境变量是否带 VITE_ 前缀来做兼容处理
-      // 但其实更安全的做法是把获取 Token 的逻辑也移到后端 API (api/image.js 类似的 api/token.js)
-      // 不过为了快速修复，我们先用 Rewrite 解决跨域
-      body: JSON.stringify({
-        app_id: APP_ID,
-        app_secret: APP_SECRET,
-      }),
-    });
+    // 请求我们自己的后端 API，不再直接请求飞书
+    // 这样就避免了前端跨域和 Token 泄露问题
+    const response = await fetch('/api/cars');
 
     if (!response.ok) {
-       // 如果 Rewrite 失败，尝试直接请求（主要用于本地开发且没有配置 Rewrite 时，虽然现在本地 vite.config.ts 也没有配置代理了）
-       console.warn('Proxy request failed, trying direct request...');
-       // ... 但其实直接请求肯定会跨域，所以这里只需要抛出错误
-       throw new Error(`Auth failed: ${response.statusText}`);
+      throw new Error(`Fetch failed: ${response.statusText}`);
     }
 
-    const data: FeishuTokenResponse = await response.json();
+    const res = await response.json();
     
-    if (data.code !== 0) {
-      throw new Error(`Auth error: ${data.msg}`);
+    if (res.code !== 0) {
+      throw new Error(`API Error: ${res.msg}`);
     }
 
-    cachedToken = data.tenant_access_token;
-    tokenExpireAt = Date.now() + (data.expire * 1000) - 300000;
-    
-    return cachedToken;
+    // 转换数据
+    return res.data.map(transformFeishuRecordToCar);
+
   } catch (error) {
-    console.error('Failed to get access token:', error);
-    throw error;
+    console.error('Error fetching cars:', error);
+    return [];
   }
 }
-
-// 2. 获取多维表格记录
-export async function fetchCars(): Promise<Car[]> {
-  // ... (keep checks)
-
-  try {
-    const token = await getTenantAccessToken();
-    
-    // 构建请求 URL - 同样使用 /api/feishu 代理
-    const url = `/api/feishu/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records`;
-    
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    // ... (rest of the function)
 
 // 3. 数据转换助手
 function transformFeishuRecordToCar(record: FeishuRecord): Car {
@@ -110,13 +70,24 @@ function transformFeishuRecordToCar(record: FeishuRecord): Car {
     : `${mileage.toLocaleString()}公里`;
 
   // 处理图片
-  // 使用本地代理 /api/image?url=xxx 
-  // 必须优先使用 tmp_url，因为它是临时的、带有权限签名的下载链接
-  // 如果 tmp_url 不存在，才使用 url (虽然 url 通常需要更高权限)
-  const images = Array.isArray(f[m.images]) 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ? f[m.images].map((img: any) => `/api/image?url=${encodeURIComponent(img.tmp_url || img.url)}`)
-    : [];
+  // 从 image_urls 字段解析 R2 链接
+  let images: string[] = [];
+  const imageUrlsRaw = f[m.images];
+  
+  if (imageUrlsRaw) {
+      if (Array.isArray(imageUrlsRaw)) {
+          // 如果飞书返回已经是数组（虽然多行文本通常是字符串）
+          images = imageUrlsRaw;
+      } else if (typeof imageUrlsRaw === 'string') {
+          try {
+              // 尝试解析 JSON 字符串
+              images = JSON.parse(imageUrlsRaw);
+          } catch (e) {
+              // 如果不是 JSON，可能就是单个 URL 或者逗号分隔
+              images = [imageUrlsRaw];
+          }
+      }
+  }
     
   // 移除 fallback 到 '基本信息图' 的逻辑
   if (images.length === 0) {
@@ -137,6 +108,15 @@ function transformFeishuRecordToCar(record: FeishuRecord): Car {
   } else if (info) {
     // 可能是其他对象格式，尝试转字符串
     features = [String(info)];
+  }
+
+  // Process English Features
+  let featuresEn: string[] = [];
+  const infoEn = f[m.featuresEn];
+  if (Array.isArray(infoEn)) {
+    featuresEn = infoEn;
+  } else if (typeof infoEn === 'string') {
+    featuresEn = infoEn.split(/[,，\n]/).map(s => s.trim()).filter(s => s.length > 0);
   }
 
   // 从 features 中提取年份、里程、燃油类型等信息（如果存在）
@@ -190,6 +170,8 @@ function transformFeishuRecordToCar(record: FeishuRecord): Car {
     bodyType: String(extractedBodyType || '轿车').trim(),
     brand: String(f[m.brand] || '其他品牌').trim(), // Safe trim
     images: images,
-    features: features
+    features: features,
+    nameEn: f[m.nameEn] ? String(f[m.nameEn]).trim() : undefined,
+    featuresEn: featuresEn.length > 0 ? featuresEn : undefined
   };
 }

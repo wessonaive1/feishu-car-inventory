@@ -65,16 +65,16 @@ export function Footer() {
           <div>
             <h4 className="text-base font-bold mb-4">{t('footer.contact_info')}</h4>
             <ul className="list-none p-0 m-0 space-y-2">
-              <li className="text-white/50 text-sm">广东省佛山市南海区海八路</li>
-              <li className="text-white/50 text-sm">+86 400-888-8888</li>
-              <li className="text-white/50 text-sm">sales@shunway.com</li>
+              <li className="text-white/50 text-sm">{t('footer.address')}</li>
+              <li className="text-white/50 text-sm">+86 136 9019 0019</li>
+              <li className="text-white/50 text-sm">srf6841271@gmail.com</li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-white/10 pt-6 text-center">
           <p className="text-white/40 text-sm">
-            {t('footer.rights', { year: currentYear })}
+            {t('footer.rights')}
           </p>
         </div>
       </div>

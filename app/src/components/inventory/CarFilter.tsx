@@ -43,8 +43,6 @@ export function CarFilter({
           onChange={(e) => handleChange('sortBy', e.target.value)}
           className="bg-white/5 border border-white/10 text-white px-4 py-3 rounded-lg text-sm focus:outline-none focus:border-primary"
         >
-          <option value="price-desc" className="bg-neutral-900">{t('inventory.sort.price_desc')}</option>
-          <option value="price-asc" className="bg-neutral-900">{t('inventory.sort.price_asc')}</option>
           <option value="year-desc" className="bg-neutral-900">{t('inventory.sort.year_desc')}</option>
           <option value="mileage-asc" className="bg-neutral-900">{t('inventory.sort.mileage_asc')}</option>
         </select>

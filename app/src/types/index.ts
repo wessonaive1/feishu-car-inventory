@@ -12,6 +12,8 @@ export interface Car {
   brand: string;
   images: string[];
   features: string[];
+  nameEn?: string;
+  featuresEn?: string[];
 }
 
 export interface FilterState {

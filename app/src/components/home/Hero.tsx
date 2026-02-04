@@ -35,6 +35,9 @@ export function Hero() {
         <h2 className="text-xl md:text-3xl lg:text-4xl text-primary font-light mb-6">
           {t('hero.subtitle')}
         </h2>
+        <h3 className="text-lg md:text-2xl lg:text-3xl text-white/90 font-medium mb-6 tracking-wide">
+          {t('hero.slogan')}
+        </h3>
         <p className="text-base md:text-lg text-white/70 max-w-[600px] mx-auto mb-8 leading-relaxed">
           {t('hero.description')}
         </p>
