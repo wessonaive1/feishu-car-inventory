@@ -1,5 +1,5 @@
 
-const https = require('https');
+import https from 'https';
 
 // 从环境变量获取配置 (支持 Vercel 注入的变量)
 const APP_ID = process.env.FEISHU_APP_ID || process.env.VITE_FEISHU_APP_ID;
@@ -66,7 +66,7 @@ function fetchRecords(token) {
 }
 
 // 主处理函数
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // 设置 CORS 头，允许前端访问
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -97,4 +97,4 @@ module.exports = async (req, res) => {
       msg: error.message
     });
   }
-};
+}
