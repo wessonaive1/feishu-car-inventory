@@ -1,7 +1,6 @@
 
 {
   "rewrites": [
-    { "source": "/api/feishu/:match*", "destination": "https://open.feishu.cn/open-apis/:match*" },
-    { "source": "/api/image", "destination": "/api/image" }
+    { "source": "/api/feishu/:match*", "destination": "https://open.feishu.cn/open-apis/:match*" }
   ]
 }
