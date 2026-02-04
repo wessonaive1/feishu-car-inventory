@@ -5,6 +5,7 @@ import type { Car, FilterState } from '../../types';
 import { CarFilter } from './CarFilter';
 import { CarDetailModal } from './CarDetailModal';
 import { fetchCars } from '../../services/feishu';
+import { formatMileage } from '../../lib/utils';
 
 export function Inventory() {
   const { t, i18n } = useTranslation();
@@ -158,7 +159,7 @@ export function Inventory() {
               <div className="flex gap-4 text-white/60 text-sm mb-4">
                 <span>{car.year}{t('inventory.card.year')}</span>
                 <span className="w-px h-4 bg-white/20" />
-                <span>{car.mileageDisplay}</span>
+                <span>{formatMileage(car.mileage, i18n.language)}</span>
               </div>
               
               <div className="flex flex-wrap gap-2">

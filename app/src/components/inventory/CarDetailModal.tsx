@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { translateAttribute, formatMileage } from '../../lib/utils';
 import type { Car } from '../../types';
 
 interface CarDetailModalProps {
@@ -144,10 +145,10 @@ export function CarDetailModal({ car, onClose }: CarDetailModalProps) {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
             {[
               { label: t('inventory.modal.year'), value: `${car.year}${t('inventory.card.year')}` },
-              { label: t('inventory.modal.mileage'), value: car.mileageDisplay },
-              { label: t('inventory.modal.fuel'), value: car.fuel },
-              { label: t('inventory.modal.transmission'), value: car.transmission },
-              { label: t('inventory.modal.body_type'), value: car.bodyType },
+              { label: t('inventory.modal.mileage'), value: formatMileage(car.mileage, i18n.language) },
+              { label: t('inventory.modal.fuel'), value: translateAttribute(car.fuel, i18n.language) },
+              { label: t('inventory.modal.transmission'), value: translateAttribute(car.transmission, i18n.language) },
+              { label: t('inventory.modal.body_type'), value: translateAttribute(car.bodyType, i18n.language) },
             ].map((item, i) => (
               <div key={i} className="bg-white/5 p-4 rounded-xl border border-white/5">
                 <div className="text-white/50 text-xs mb-1">{item.label}</div>
