@@ -137,9 +137,6 @@ export function CarDetailModal({ car, onClose }: CarDetailModalProps) {
             <h2 className="text-3xl font-bold text-white">
               {i18n.language === 'en' && car.nameEn ? car.nameEn : car.name}
             </h2>
-            <div className="text-2xl font-bold text-primary">
-              {car.priceDisplay}
-            </div>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
