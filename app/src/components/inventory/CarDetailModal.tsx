@@ -81,11 +81,11 @@ export function CarDetailModal({ car, onClose }: CarDetailModalProps) {
         </button>
 
         {/* Main Image */}
-        <div className="relative aspect-video group">
+        <div className="relative aspect-video group bg-neutral-900">
           <img 
             src={car.images[currentImageIndex]} 
             alt={car.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
           
           {/* Navigation Arrows */}
