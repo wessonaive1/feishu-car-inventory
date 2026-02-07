@@ -122,6 +122,23 @@ export function CarDetailModal({ car, onClose }: CarDetailModalProps) {
           {t('inventory.modal.image_tip')}
         </div>
 
+        {/* Lightbox */}
+        <Lightbox
+          open={openLightbox}
+          close={() => setOpenLightbox(false)}
+          index={currentImageIndex}
+          slides={car.images.map(src => ({ src }))}
+          plugins={[Zoom]}
+          on={{
+            view: ({ index }) => setCurrentImageIndex(index)
+          }}
+          animation={{ fade: 0 }}
+          controller={{ closeOnBackdropClick: true }}
+          styles={{ 
+            container: { backgroundColor: "rgba(0, 0, 0, .9)" }
+          }}
+        />
+
         {/* Thumbnail Strip */}
         <div className="flex gap-2 p-4 overflow-x-auto border-b border-white/10 scrollbar-hide">
           {car.images.map((img, idx) => (
