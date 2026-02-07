@@ -1,3 +1,8 @@
+export interface FeishuRecord {
+  record_id: string;
+  fields: Record<string, any>;
+}
+
 export interface Car {
   id: number | string;
   name: string;

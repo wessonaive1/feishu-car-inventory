@@ -1,5 +1,5 @@
 
-import type { Car } from '../types';
+import type { Car, FeishuRecord } from '../types';
 
 // 使用 Vite Proxy 代理的地址
 const API_BASE_URL = '/api/feishu';
