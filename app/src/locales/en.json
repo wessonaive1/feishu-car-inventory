@@ -43,7 +43,7 @@
       "transmission": "Transmission",
       "body_type": "Body Type",
       "features": "Key Features",
-      "download": "Download Gallery"
+      "image_tip": "Click to zoom, swipe to switch, long press to save"
     }
   },
   "contact": {

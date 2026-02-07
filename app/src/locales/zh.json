@@ -43,7 +43,7 @@
       "transmission": "变速箱",
       "body_type": "车身类型",
       "features": "配置亮点",
-      "download": "下载图集"
+      "image_tip": "点击图片可放大，左右滑动切换，长按图片可保存"
     }
   },
   "contact": {

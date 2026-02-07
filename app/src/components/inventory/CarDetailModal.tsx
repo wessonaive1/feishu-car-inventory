@@ -112,6 +112,11 @@ export function CarDetailModal({ car, onClose }: CarDetailModalProps) {
           </div>
         </div>
 
+        {/* Image Interaction Tip */}
+        <div className="text-center py-2 text-xs text-[#888]">
+          {t('inventory.modal.image_tip')}
+        </div>
+
         {/* Thumbnail Strip */}
         <div className="flex gap-2 p-4 overflow-x-auto border-b border-white/10 scrollbar-hide">
           {car.images.map((img, idx) => (
@@ -163,17 +168,6 @@ export function CarDetailModal({ car, onClose }: CarDetailModalProps) {
                 </span>
               ))}
             </div>
-          </div>
-
-          {/* Actions (Download, etc) */}
-          <div className="flex gap-4 border-t border-white/10 pt-6">
-             <button 
-               onClick={handleDownload}
-               className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
-             >
-               <Download size={18} />
-               <span>{t('inventory.modal.download')}</span>
-             </button>
           </div>
         </div>
       </div>
