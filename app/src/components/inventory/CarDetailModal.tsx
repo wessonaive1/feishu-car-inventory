@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { translateAttribute, formatMileage } from '../../lib/utils';
 import type { Car } from '../../types';
@@ -13,6 +13,10 @@ interface CarDetailModalProps {
 export function CarDetailModal({ car, onClose }: CarDetailModalProps) {
   const { t, i18n } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // Lock body scroll
   useEffect(() => {
@@ -32,85 +36,143 @@ export function CarDetailModal({ car, onClose }: CarDetailModalProps) {
     setCurrentImageIndex((prev) => (prev - 1 + car.images.length) % car.images.length);
   };
 
-  const handleDownload = async () => {
-    try {
-      const imageUrl = car.images[currentImageIndex];
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${car.name.replace(/\s+/g, '-')}-${currentImageIndex + 1}.jpg`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success(t('inventory.modal.download_started') || 'Download started');
-    } catch (error) {
-      console.error('Download failed', error);
-      window.open(car.images[currentImageIndex], '_blank');
-    }
-  };
-
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') prevImage();
       if (e.key === 'ArrowRight') nextImage();
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (isFullscreen) setIsFullscreen(false);
+        else onClose();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isFullscreen, onClose]);
 
-  return (
+  // Touch handling for swipe
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) nextImage();
+    if (isRightSwipe) prevImage();
+  };
+
+  // Lightbox component
+  const Lightbox = () => (
     <div 
-      className="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6 animate-fade-in"
-      onClick={onClose}
+      className="fixed inset-0 bg-black z-[200] flex items-center justify-center animate-fade-in touch-none"
+      onClick={() => setIsFullscreen(false)}
     >
+      <button 
+        onClick={(e) => { e.stopPropagation(); setIsFullscreen(false); }}
+        className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 z-50"
+      >
+        <X size={24} />
+      </button>
+
       <div 
-        className="bg-[#111] rounded-2xl w-full max-w-[1000px] max-h-[90vh] overflow-y-auto border border-white/10 animate-scale-in"
+        className="relative w-full h-full flex items-center justify-center"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
+        <img 
+          src={car.images[currentImageIndex]} 
+          alt={car.name}
+          className="max-w-full max-h-full object-contain select-none"
+          draggable={false}
+        />
+
+        {/* Navigation Arrows (PC only) */}
         <button 
-          onClick={onClose}
-          className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
+          onClick={prevImage}
+          className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 text-white items-center justify-center hover:bg-white/20"
         >
-          <X size={24} />
+          <ChevronLeft size={28} />
+        </button>
+        <button 
+          onClick={nextImage}
+          className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 text-white items-center justify-center hover:bg-white/20"
+        >
+          <ChevronRight size={28} />
         </button>
 
-        {/* Main Image */}
-        <div className="relative aspect-video group bg-neutral-900">
-          <img 
-            src={car.images[currentImageIndex]} 
-            alt={car.name}
-            className="w-full h-full object-contain"
-          />
-          
-          {/* Navigation Arrows */}
-          {car.images.length > 1 && (
-            <>
-              <button 
-                onClick={prevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
-              >
-                <ChevronLeft size={28} />
-              </button>
-              <button 
-                onClick={nextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
-              >
-                <ChevronRight size={28} />
-              </button>
-            </>
-          )}
-          
-          {/* Image Counter */}
-          <div className="absolute bottom-4 right-4 bg-black/70 px-4 py-2 rounded-full text-sm text-white">
-            {currentImageIndex + 1} / {car.images.length}
-          </div>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/50 px-4 py-2 rounded-full text-white text-sm">
+          {currentImageIndex + 1} / {car.images.length}
         </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      {isFullscreen && <Lightbox />}
+      <div 
+        className="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6 animate-fade-in"
+        onClick={onClose}
+      >
+        <div 
+          className="bg-[#111] rounded-2xl w-full max-w-[1000px] max-h-[90vh] overflow-y-auto border border-white/10 animate-scale-in"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Close Button */}
+          <button 
+            onClick={onClose}
+            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
+          >
+            <X size={24} />
+          </button>
+
+          {/* Main Image */}
+          <div 
+            className="relative aspect-video group bg-neutral-900 cursor-zoom-in"
+            onClick={() => setIsFullscreen(true)}
+          >
+            <img 
+              src={car.images[currentImageIndex]} 
+              alt={car.name}
+              className="w-full h-full object-contain"
+            />
+            
+            {/* Navigation Arrows */}
+            {car.images.length > 1 && (
+              <>
+                <button 
+                  onClick={prevImage}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                >
+                  <ChevronLeft size={28} />
+                </button>
+                <button 
+                  onClick={nextImage}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                >
+                  <ChevronRight size={28} />
+                </button>
+              </>
+            )}
+            
+            {/* Image Counter */}
+            <div className="absolute bottom-4 right-4 bg-black/70 px-4 py-2 rounded-full text-sm text-white flex items-center gap-2">
+              <ZoomIn size={14} />
+              <span>{currentImageIndex + 1} / {car.images.length}</span>
+            </div>
+          </div>
 
         {/* Image Interaction Tip */}
         <div className="text-center py-2 text-xs text-[#888]">
@@ -171,6 +233,6 @@ export function CarDetailModal({ car, onClose }: CarDetailModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
