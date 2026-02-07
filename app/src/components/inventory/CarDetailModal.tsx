@@ -16,6 +16,7 @@ interface CarDetailModalProps {
 export function CarDetailModal({ car, onClose }: CarDetailModalProps) {
   const { t, i18n } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [openLightbox, setOpenLightbox] = useState(false);
 
   // Lock body scroll
   useEffect(() => {
