@@ -3,19 +3,19 @@ import fs from 'fs';
 import https from 'https';
 import http from 'http';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import 'dotenv/config';
 
 // === 配置区域 ===
-const FEISHU_APP_ID = 'cli_a9f727403d795bd1';
-const FEISHU_APP_SECRET = '5oRSPoRP4LMvjtVxJHT4AhRJ0UrhRWYx';
-const APP_TOKEN = 'TVo7bKxZgabhFZsc7TKc5wOYnUf';
-const TABLE_ID = 'tblPsgXNXPlX8xGt';
+const FEISHU_APP_ID = process.env.FEISHU_APP_ID;
+const FEISHU_APP_SECRET = process.env.FEISHU_APP_SECRET;
+const APP_TOKEN = process.env.APP_TOKEN;
+const TABLE_ID = process.env.TABLE_ID;
 
-const R2_ACCOUNT_ID = '2f32e4866ad97cfd261648b1bd4c9797';
-const R2_ACCESS_KEY_ID = '01235db3d2e003aa99f5801dc80f5e8d';
-// 尝试使用新的 Secret Access Key
-const R2_SECRET_ACCESS_KEY = '3c46c6fddbfd7ff4f1de7c0b48706413a460ead6f8408f72b74e702b5f3a8b31';
-const R2_BUCKET_NAME = 'car-images';
-const R2_PUBLIC_DOMAIN = 'https://pub-6eacad8bea0f41e58d8369dddd63acc2.r2.dev';
+const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
+const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
+const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY;
+const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME;
+const R2_PUBLIC_DOMAIN = process.env.R2_PUBLIC_DOMAIN;
 
 // 初始化 S3 Client (Cloudflare R2)
 // 注意：Cloudflare R2 的 endpoint 必须是 https://<ACCOUNT_ID>.r2.cloudflarestorage.com
